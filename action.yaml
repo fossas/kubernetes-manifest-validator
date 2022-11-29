@@ -1,0 +1,20 @@
+name: 'Manifest Validator'
+description: 'Performs validations against Kubernetes manifests'
+inputs:
+  path:  # id of input
+    description: 'Path with manifests to be validated.'
+    required: false
+    default: '.'
+  chartReposPath:
+    description: 'Path containing charts to validate against.'
+    required: false
+    default: "chart_repos"
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.path }}
+    - ${{ inputs.chartReposPath }}
+branding:
+  icon: 'check'
+  color: 'blue'
