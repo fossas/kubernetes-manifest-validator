@@ -2,7 +2,7 @@ name: build container
 
 on:
   push:
-    branch:
+    branches:
     - master
     tags:
     - v*
