@@ -7,7 +7,7 @@ Simply run the provided container like this to do local validation. SSH keys are
 ```
 docker run --rm -it \
   -v "${PWD}:/workdir" -w /workdir \
-  -v "${HOME}/.ssh:/home/tooluser/.ssh" \
+  -v "${HOME}/.ssh:/home/runner/.ssh" \
   ghcr.io/protosam/kubernetes-manifest-validator:latest PATH_TO_VALIDATE [PRE_FETCHED_HELM_CHARTS_PATH]
 ```
 
