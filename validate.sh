@@ -4,11 +4,15 @@ set -e
 # remember root path
 ROOT_PATH=$(realpath .)
 
-# resolve chart directory
-CHART_DIR_PATH=$"${ROOT_PATH}/${2}"
+# resolve chart directory from pre-fetch dir
+[ -z "${2}" ] || CHART_DIR_PATH="${ROOT_PATH}/${2}"
+[ -z "${2}" ] || CHARTS_ARE_PRE_FETCHED="true"
+# fall back to a tempdir
+[ -z "${2}" ] && CHART_DIR_PATH=$(mktemp -d)
+
 
 # change working directory to where manifests reside
-cd "${1}"
+cd "${1:-${PWD}}"
 echo "Using ${PWD}"
 
 # don't blindly overwrite files, that's bad
@@ -70,6 +74,15 @@ yq 'select(.apiVersion == "helm.fluxcd.io/v1") | select(.kind == "HelmRelease") 
         helm template --release-name "${RELEASE_NAME}" "${RELEASE_CHART_NAME}" --version "${RELEASE_CHART_VERSION}" --namespace "${RELEASE_NAMESPACE}" --repo "${RELEASE_CHART_REPOSITORY}" --values "${HR_VALUES}" > /dev/null
     elif [ "${RELEASE_CHART_GIT}" != "" ]; then
         CHART_DIR="${CHART_DIR_PATH}/${RELEASE_NAMESPACE}/${RELEASE_NAME}"
+        
+        # assuming this is not a github action, cloning the repo manually is required
+        if [ -z "${CHARTS_ARE_PRE_FETCHED}" ]; then
+            mkdir -p "${CHART_DIR}"
+            echo "Cloning ${RELEASE_CHART_GIT}"
+            git clone "${RELEASE_CHART_GIT}" "${CHART_DIR}"
+        fi
+
+        # confirm it was prefetched
         if [ ! -d "${CHART_DIR}" ]; then
             echo "ERROR: Failed to find chart for ${HR} in ${CHART_PATH}"
             echo "Hint: This should be pre-fetched with actions/checkout"

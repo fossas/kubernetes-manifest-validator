@@ -1,5 +1,15 @@
 # Manifest Validator
-A GitHub action to validate Kubernetes Manifests.
+A container and GitHub action to validate Kubernetes Manifests.
+
+
+## Validating Manifests Locally
+Simply run the provided container like this to do local validation. SSH keys are only necessary if fetching additional repos is necessary to validate helm charts.
+```
+docker run --rm -it \
+  -v "${PWD}:/workdir" -w /workdir \
+  -v "${HOME}/.ssh:/home/tooluser/.ssh" \
+  ghcr.io/protosam/kubernetes-manifest-validator:latest PATH_TO_VALIDATE [PRE_FETCHED_HELM_CHARTS_PATH]
+```
 
 ## Usage
 ```yaml
@@ -32,4 +42,9 @@ jobs:
           path: "."
           # directory containing pre-fetched charts from git repositories
           chartReposPath: "chart_repos"
+```
+
+## Building Locally
+```
+docker build -t ghcr.io/protosam/kubernetes-manifest-validator:latest .
 ```
