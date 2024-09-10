@@ -30,7 +30,7 @@ MANIFEST_YAML="${TMP}/manifest.yaml"
 trap "rm -rf ${TMP} kustomization.yaml" EXIT
 
 echo "Finding resources in ${PWD}"
-RESOURCES=$(find . -path '*.yaml' | paste -s -d ',' -)
+RESOURCES=$(find . -path '*.yaml' | grep -v 'kustomization.yaml' | grep -v '/.github/' | paste -s -d ',' -)
 
 echo "Generating kustomization.yaml"
 kustomize create --resources "${RESOURCES}"
